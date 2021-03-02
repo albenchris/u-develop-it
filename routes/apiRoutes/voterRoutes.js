@@ -6,7 +6,7 @@ const inputCheck = require("../../utils/inputCheck");
 // ========== VOTERS START ==========================================================
 
 router.get("/voters", (req, res) => {
-    const sql = `SELECT * FROM voters`;
+    const sql = `SELECT * FROM voters ORDER BY last_name`;
     const params = [];
 
     db.all(sql, params, (err, rows) => {
@@ -21,5 +21,25 @@ router.get("/voters", (req, res) => {
         });
     });
 });
+
+router.get("/voter/:id", (req, res) => {
+    const sql = `SELECT * FROM voters WHERE id = ?`;
+    const params = [req.params.id];
+
+    db.get(sql, params, (err, row) => {
+        if (err) {
+            res.sendStatus(400).json({ error: err.message });
+            return;
+        }
+
+        res.json({
+            message: "success",
+            data: row
+        });
+    });
+});
+
+// ========== VOTERS END ============================================================
+
 
 module.exports = router;
