@@ -48,7 +48,7 @@ router.post("/voter", ({ body }, res) => {
         res.sendStatus(400).json({ error: errors });
         return;
     }
-    
+
     const sql = `INSERT INTO voters (first_name, last_name, email)
                     VALUES (?,?,?)`;
     const params = [body.first_name, body.last_name, body.email];
@@ -68,7 +68,32 @@ router.post("/voter", ({ body }, res) => {
 });
 
 // UPDATE a voter
+router.put("/voter/:id", (req, res) => {
+    // Data validation
+    const errors = inputCheck(req.body, "email");
+    if (errors) {
+        res.sendStatus(400).json({ errors: errors });
+        return;
+    }
 
+    // Prepare statement
+    const sql = `UPDATE voters SET email = ? WHERE id = ?`;
+    const params = [req.body.email, req.params.id];
+
+    // Execute
+    db.run(sql, params, function(err, data) {
+        if (err) {
+            res.sendStatus(400).json({ error: err.message });
+            return;
+        }
+
+        res.json({
+            message: "success",
+            data: req.body,
+            changes: this.changes
+        });
+    });
+});
 
 // DELETE a voter
 
